@@ -9,7 +9,7 @@ public record Token(TokenType Type, StringView Src) {
 }
 
 public record TokenType {
-    string? Name;
+    private readonly string? Name;
 
     private TokenType() {}
 
