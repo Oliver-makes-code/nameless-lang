@@ -4,10 +4,10 @@ public struct StringView {
     public (int startIdx, int endIdx) location;
     public string source;
 
-    public string Value => source.Substring(location.startIdx, location.endIdx - location.startIdx);
+    public string value => source[location.startIdx..location.endIdx];
 
     public override string ToString()
-        => Value;
+        => value;
 }
 
 public class StringParser {

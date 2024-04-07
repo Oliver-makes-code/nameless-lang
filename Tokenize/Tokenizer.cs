@@ -16,7 +16,7 @@ public static class Tokenizer {
     private static Token ParseSignleToken(StringParser parser) {
         parser.Checkout();
 
-        if (parser.IsAny([' ', '\t'])) {
+        if (parser.IsAny([' ', '\t', '\n'])) {
             do
                 parser.Next();
             while (parser.IsAny([' ', '\t']));
@@ -29,7 +29,7 @@ public static class Tokenizer {
         if (parser.IsFunc(c => char.IsAsciiLetter(c) || c == '_')) {
             parser.ConsumeFunc(c => char.IsAsciiLetterOrDigit(c) || c == '_');
             var view = parser.Commit();
-            var value = view.Value;
+            var value = view.value;
             if (TokenType.Keyword.Is(value, out var keyword))
                 return new Token(keyword, view);
             return new Token(new TokenType.Identifier(value), view);
@@ -47,15 +47,16 @@ public static class Tokenizer {
                     parser.ConsumeFunc(char.IsAsciiDigit);
 
                     value = parser.Commit();
-                    return new Token(new TokenType.Number<double>(double.Parse(value.Value)), value);
+                    return new Token(new TokenType.Number<double>(double.Parse(value.value)), value);
                 }
                 parser.Rollback();
             }
 
             value = parser.Commit();
-            return new Token(new TokenType.Number<long>(long.Parse(value.Value)), value);
+            return new Token(new TokenType.Number<long>(long.Parse(value.value)), value);
         }
-
-        throw new NotImplementedException();
+        
+        parser.Next();
+        return new Token(TokenType.Error, parser.Commit());
     }
 }

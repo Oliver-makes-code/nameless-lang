@@ -56,6 +56,9 @@ public record TokenType {
     public record Symbol : TokenType {
         public static Symbol[] Values { get; private set; } = [];
 
+        public static readonly Symbol Semicolon = new("Semicolon", ";");
+        public static readonly Symbol Arrow = new("Arrow", "=>");
+
         public static readonly Symbol BracketOpen  = new("BracketOpen",  "[");
         public static readonly Symbol BracketClose = new("BracketClose", "]");
         public static readonly Symbol BraceOpen    = new("BraceOpen",    "{");
@@ -65,7 +68,7 @@ public record TokenType {
         public static readonly Symbol AngleClose   = new("AngleClose",   ">");
         public static readonly Symbol AngleOpen    = new("AndleOpen",    "<");
 
-        public static readonly Symbol Or  = new("Or" , "|");
+        public static readonly Symbol Or  = new("Or",  "|");
         public static readonly Symbol And = new("And", "&");
         public static readonly Symbol Xor = new("Xor", "^");
         public static readonly Symbol Not = new("Not", "!");
@@ -75,6 +78,8 @@ public record TokenType {
         public static readonly Symbol Div = new("Div", "/");
         public static readonly Symbol Mod = new("Mod", "%");
         public static readonly Symbol Pow = new("Pow", "^^");
+        public static readonly Symbol Inc = new("Inc", "++");
+        public static readonly Symbol Dec = new("Dec", "--");
 
         public static readonly Symbol Assign    = new("Assign",    "=");
         public static readonly Symbol AndAssign = new("AndAssign", "&=");
@@ -99,6 +104,7 @@ public record TokenType {
         public static readonly Symbol RangeFromTo = new("RangeFromTo", "<..=");
 
         public readonly string Value;
+
         private Symbol(string name, string value) : base(name) {
             Value = value;
             Values = [..Values, this];
@@ -119,7 +125,7 @@ public record TokenType {
         public override string ToString()
             => $"Symbol({Name}: \"{Value}\")";
     }
-    
+
     public record Number<T>(T Value) : TokenType where T : struct {
         public override string ToString()
             => $"Number({Value})";
@@ -139,7 +145,7 @@ public record TokenType {
 
     public static readonly TokenType Whitespace = new("Whitespace");
 
-    public static readonly TokenType Newline = new("Newline");
+    public static readonly TokenType Error = new("Error");
 
     public override string? ToString()
         => Name ?? base.ToString();
