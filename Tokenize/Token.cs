@@ -40,6 +40,8 @@ public record TokenType {
         public static readonly Keyword True  = new("true");
         public static readonly Keyword False = new("false");
 
+        public static readonly Keyword Func = new("func");
+
         public readonly string Value;
         private Keyword(string value) {
             Value = value;
