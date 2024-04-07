@@ -1,4 +1,4 @@
-Option<int> Test(int max) {
+Option<i32> Test(i32 max) {
     for (i in 0..max)
         if (i == 16)
             return Some(16);
