@@ -1,4 +1,4 @@
 ﻿using Lang.Tokenize;
 
-foreach (var token in Tokenizer.Tokenize(File.ReadAllText("test.txt")))
+foreach (var token in Tokenizer.Tokenize("test.txt", File.ReadAllText("test.txt")))
     Console.WriteLine(token);

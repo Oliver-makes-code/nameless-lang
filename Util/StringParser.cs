@@ -1,23 +1,46 @@
 namespace Lang.Util;
 
-public struct StringView {
-    public (int startIdx, int endIdx) location;
-    public string source;
+public readonly struct StringView {
+    public readonly string FilePath;
+    public readonly string Source;
+    public readonly string Value;
+    public readonly string Line;
+    public readonly int StartIdx;
+    public readonly int EndIdx;
+    public readonly int LineNum;
+    public readonly int ColNum;
+    public readonly int LineStart;
+    public readonly int LineEnd;
 
-    public string value => source[location.startIdx..location.endIdx];
+    public StringView(string path, string source, int startIdx, int endIdx) {
+        FilePath = path;
+        Source = source;
+        StartIdx = startIdx;
+        EndIdx = endIdx;
+        Value = Source[StartIdx..EndIdx];
+
+        var split = Source[..StartIdx].Split('\n');
+        LineNum = split.Length;
+        ColNum = split[LineNum-1].Length + 1;
+        LineStart = StartIdx - ColNum + 1;
+        Line = Source[LineStart..].Split('\n')[0]!;
+        LineEnd = Line.Length - 1;
+    }
 
     public override string ToString()
-        => value;
+        => Value;
 }
 
 public class StringParser {
     public readonly string Source;
+    public readonly string FilePath;
     private readonly Stack<int> Snapshots = [];
 
     private int idx = 0;
 
-    public StringParser(string source) {
+    public StringParser(string path, string source) {
         Source = source;
+        FilePath = path;
     }
 
     public void Checkout()
@@ -29,10 +52,7 @@ public class StringParser {
     public StringView Commit() {
         int startIdx = Snapshots.Pop();
 
-        return new() {
-            location = (startIdx, idx),
-            source = Source
-        };
+        return new(FilePath, Source, startIdx, idx);
     }
 
     public char? Current() {

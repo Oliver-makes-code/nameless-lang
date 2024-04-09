@@ -149,10 +149,6 @@ public record TokenType {
 
     public static readonly TokenType Eof = new("Eof");
 
-    public static readonly TokenType Whitespace = new("Whitespace");
-
-    public static readonly TokenType Error = new("Error");
-
     public override string? ToString()
         => Name ?? base.ToString();
 }

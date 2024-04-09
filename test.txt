@@ -1,10 +1,1 @@
-Option<i32> Test(i32 max) {
-    for (i in 0..max)
-        if (i == 16)
-            return Some(16);
-    return None;
-}
-
-void Main(string[] args) {
-    println(Test(32));
-}
+1 + 1;

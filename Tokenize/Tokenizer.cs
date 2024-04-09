@@ -3,8 +3,8 @@ using Lang.Util;
 namespace Lang.Tokenize;
 
 public static class Tokenizer {
-    public static IEnumerable<Token> Tokenize(string source) {
-        var parser = new StringParser(source);
+    public static IEnumerable<Token> Tokenize(string path, string source) {
+        var parser = new StringParser(path, source);
 
         while (parser.Current() != null)
             yield return ParseSignleToken(parser);
@@ -20,7 +20,8 @@ public static class Tokenizer {
             do
                 parser.Next();
             while (parser.IsAny([' ', '\t']));
-            return new Token(TokenType.Whitespace, parser.Commit());
+            parser.Commit();
+            parser.Checkout();
         }
 
         if (TokenType.Symbol.Is(parser, out var symbol))
@@ -29,7 +30,7 @@ public static class Tokenizer {
         if (parser.IsFunc(c => char.IsAsciiLetter(c) || c == '_')) {
             parser.ConsumeFunc(c => char.IsAsciiLetterOrDigit(c) || c == '_');
             var view = parser.Commit();
-            var value = view.value;
+            var value = view.Value;
             if (TokenType.Keyword.Is(value, out var keyword))
                 return new Token(keyword, view);
             return new Token(new TokenType.Identifier(value), view);
@@ -47,16 +48,25 @@ public static class Tokenizer {
                     parser.ConsumeFunc(char.IsAsciiDigit);
 
                     value = parser.Commit();
-                    return new Token(new TokenType.Number<double>(double.Parse(value.value)), value);
+                    return new Token(new TokenType.Number<double>(double.Parse(value.Value)), value);
                 }
                 parser.Rollback();
             }
 
             value = parser.Commit();
-            return new Token(new TokenType.Number<long>(long.Parse(value.value)), value);
+            return new Token(new TokenType.Number<long>(long.Parse(value.Value)), value);
+        }
+
+        if (parser.Is('"')) {
+            do
+                parser.Next();
+            while (!parser.Is('"'));
+            parser.Next();
+            var value = parser.Commit();
+            return new Token(new TokenType.String(value.Value[1..(value.Value.Length-1)]), value);
         }
         
         parser.Next();
-        return new Token(TokenType.Error, parser.Commit());
+        throw new TokenizeException(parser.Commit());
     }
 }
