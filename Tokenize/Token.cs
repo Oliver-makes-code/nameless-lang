@@ -25,7 +25,7 @@ public record TokenType {
 
         public static readonly Keyword Mut = new("mut");
         public static readonly Keyword Var = new("var");
-        public static readonly Keyword As  = new("As");
+        public static readonly Keyword As  = new("as");
 
         public static readonly Keyword If   = new("if");
         public static readonly Keyword Else = new("else");
@@ -41,6 +41,19 @@ public record TokenType {
         public static readonly Keyword False = new("false");
 
         public static readonly Keyword Func = new("func");
+
+        // Builtin types
+        public static readonly Keyword Bool = new("bool");
+        public static readonly Keyword I8 = new("i8");
+        public static readonly Keyword I16 = new("i16");
+        public static readonly Keyword I32 = new("i32");
+        public static readonly Keyword I64 = new("i64");
+        public static readonly Keyword Ui8 = new("ui8");
+        public static readonly Keyword Ui16 = new("ui16");
+        public static readonly Keyword Ui32 = new("ui32");
+        public static readonly Keyword Ui64 = new("ui64");
+        public static readonly Keyword F32 = new("f32");
+        public static readonly Keyword F64 = new("f64");
 
         public readonly string Value;
         private Keyword(string value) {
@@ -78,6 +91,8 @@ public record TokenType {
         public static readonly Symbol Mod     = new("Mod",     "%");
         public static readonly Symbol Inc     = new("Inc",     "++");
         public static readonly Symbol Dec     = new("Dec",     "--");
+        public static readonly Symbol Shl     = new("Shl",     "<<");
+        public static readonly Symbol Shr     = new("Shr",     ">>");
         public static readonly Symbol BitOr   = new("BitOr",   "|");
         public static readonly Symbol BitAnd  = new("BitAnd",  "&");
         public static readonly Symbol BitXor  = new("BitXor",  "^");
@@ -91,6 +106,8 @@ public record TokenType {
         public static readonly Symbol MulAssign     = new("MulAssign", "*=");
         public static readonly Symbol DivAssign     = new("DivAssign", "/=");
         public static readonly Symbol ModAssign     = new("ModAssign", "%=");
+        public static readonly Symbol ShlAssign     = new("ShlAssign", "<<=");
+        public static readonly Symbol ShrAssign     = new("ShrAssign", ">>=");
         public static readonly Symbol BitAndAssign  = new("BitAndAssign", "&=");
         public static readonly Symbol BitOrAssign   = new("BitOrAssign",  "|=");
         public static readonly Symbol BitXorAssign  = new("BitXorAssign", "^=");

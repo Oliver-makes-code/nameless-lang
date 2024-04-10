@@ -1,4 +1,4 @@
-﻿using Lang.Tokenize;
+﻿using Lang.SyntaxTree;
+using Lang.Tokenize;
 
-foreach (var token in Tokenizer.Tokenize("test.txt", File.ReadAllText("test.txt")))
-    Console.WriteLine(token);
+AstParser.GenerateAst("test.txt", File.ReadAllText("test.txt"));

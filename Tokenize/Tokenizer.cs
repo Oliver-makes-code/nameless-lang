@@ -47,6 +47,7 @@ public static class Tokenizer {
                 if (parser.IsFunc(char.IsAsciiDigit)) {
                     parser.ConsumeFunc(char.IsAsciiDigit);
 
+                    parser.Commit();
                     value = parser.Commit();
                     return new Token(new TokenType.Number<double>(double.Parse(value.Value)), value);
                 }
