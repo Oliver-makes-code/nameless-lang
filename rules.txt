@@ -1,0 +1,5 @@
+I'm only really using this to think about rules in a more abstract manner
+
+Expression = Value [Terms]
+Value = Number | String
+Terms = Operator Value

@@ -5,7 +5,7 @@ public record Option<T> {
     public static readonly Option<T> None = new();
 
     public bool IsSome => this is Some;
-    public bool IsNone => this !is Some;
+    public bool IsNone => this is not Some;
 
     private Option() {}
 

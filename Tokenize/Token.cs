@@ -9,10 +9,8 @@ public record Token(TokenType Type, StringView Src) {
 }
 
 public record TokenType {
-    private readonly string? Name;
-
-    private TokenType() {}
-
+    public readonly string Name;
+    
     private TokenType(string name) {
         Name = name;
     }
@@ -56,7 +54,7 @@ public record TokenType {
         public static readonly Keyword F64 = new("f64");
 
         public readonly string Value;
-        private Keyword(string value) {
+        private Keyword(string value) : base(value) {
             Value = value;
             Values[value] = this;
         }
@@ -149,17 +147,17 @@ public record TokenType {
             => $"Symbol({Name}: \"{Value}\")";
     }
 
-    public record Number<T>(T Value) : TokenType where T : struct {
+    public record Number<T>(T Value) : TokenType("Number") where T : struct {
         public override string ToString()
             => $"Number({Value})";
     }
 
-    public record String(string Value) : TokenType {
+    public record String(string Value) : TokenType("String") {
         public override string ToString()
             => $"String(\"{Value}\")";
     }
 
-    public record Identifier(string Value) : TokenType{
+    public record Identifier(string Value) : TokenType("Identifier") {
         public override string ToString()
             => $"Identifier(\"{Value}\")";
     }
