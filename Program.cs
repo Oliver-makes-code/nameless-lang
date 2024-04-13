@@ -1,9 +1,7 @@
 ﻿namespace Lang;
 
-using Lang.SyntaxTree;
 using Lang.SyntaxTree.Rules;
 using Lang.Tokenize;
-using Lang.Util;
 
 public static class Program {
     public static void Main() {

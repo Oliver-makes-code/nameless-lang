@@ -1,3 +1,4 @@
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using Lang.SyntaxTree.Rules;
 using Lang.Util;
@@ -23,42 +24,50 @@ public record TokenType {
     public record Keyword : TokenType {
         public static readonly Dictionary<string, Keyword> Values = [];
 
-        public static readonly Keyword Variants = new("variants");
-        public static readonly Keyword Struct   = new("struct");
+        // Type Definitions / Generics
+        public static readonly Keyword Class  = new("class");
+        public static readonly Keyword Struct = new("struct");
+        public static readonly Keyword Enum   = new("enum");
+        public static readonly Keyword Trair  = new("trait");
+        public static readonly Keyword Where  = new("where");
 
+        // Modifiers
+        public static readonly Keyword Pub = new("pub");
         public static readonly Keyword Mut = new("mut");
+        public static readonly Keyword Ref = new("ref");
+
+        // Variables / Functions
         public static readonly Keyword Var = new("var");
         public static readonly Keyword As  = new("as");
-
-        public static readonly Keyword If   = new("if");
-        public static readonly Keyword Else = new("else");
-
+        public static readonly Keyword Func = new("func");
+        public static readonly Keyword Discard = new("_");
+        
+        // Control Flow
+        public static readonly Keyword If    = new("if");
+        public static readonly Keyword Else  = new("else");
         public static readonly Keyword For   = new("for");
-        public static readonly Keyword In    = new("in");
         public static readonly Keyword While = new("while");
         public static readonly Keyword Loop  = new("loop");
+        public static readonly Keyword In    = new("in");
+        public static readonly Keyword Is    = new("is");
+        public static readonly Keyword Match = new("match");
 
-        public static readonly Keyword When = new("when");
-
+        // Boolean
         public static readonly Keyword True  = new("true");
         public static readonly Keyword False = new("false");
 
-        public static readonly Keyword Func = new("func");
-
         // Builtin types
         public static readonly Keyword Bool = new("bool");
-        public static readonly Keyword I8 = new("i8");
-        public static readonly Keyword I16 = new("i16");
-        public static readonly Keyword I32 = new("i32");
-        public static readonly Keyword I64 = new("i64");
-        public static readonly Keyword Ui8 = new("ui8");
+        public static readonly Keyword I8   = new("i8");
+        public static readonly Keyword I16  = new("i16");
+        public static readonly Keyword I32  = new("i32");
+        public static readonly Keyword I64  = new("i64");
+        public static readonly Keyword Ui8  = new("ui8");
         public static readonly Keyword Ui16 = new("ui16");
         public static readonly Keyword Ui32 = new("ui32");
         public static readonly Keyword Ui64 = new("ui64");
-        public static readonly Keyword F32 = new("f32");
-        public static readonly Keyword F64 = new("f64");
-
-        public static readonly Keyword Discard = new("_");
+        public static readonly Keyword F32  = new("f32");
+        public static readonly Keyword F64  = new("f64");
 
         public readonly string Value;
 
@@ -67,7 +76,7 @@ public record TokenType {
             Values[value] = this;
         }
 
-        public static bool Is(string value, [NotNullWhen(true)] out Keyword? keyword)
+        public static bool IsValue(string value, [NotNullWhen(true)] out Keyword? keyword)
             => Values.TryGetValue(value, out keyword);
 
         public override string ToString()
@@ -103,8 +112,8 @@ public record TokenType {
         public static readonly Symbol BitAnd  = new("BitAnd",  "&");
         public static readonly Symbol BitXor  = new("BitXor",  "^");
         public static readonly Symbol BoolOr  = new("BoolOr",  "||");
-        public static readonly Symbol BoolAnd = new("BoolAnd", "||");
-        public static readonly Symbol BoolXor = new("BoolXor", "||");
+        public static readonly Symbol BoolAnd = new("BoolAnd", "&&");
+        public static readonly Symbol BoolXor = new("BoolXor", "^^");
 
         public static readonly Symbol Assign        = new("Assign",    "=");
         public static readonly Symbol AddAssign     = new("AddAssign", "+=");

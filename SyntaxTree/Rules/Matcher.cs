@@ -30,18 +30,20 @@ public record ListMatcher(string Name, LazyInitializer<List<Matcher>> Matches) :
         int maxPeek = n;
         int advance = 0;
         var matches = new List<Matchlet>();
+        Diagnostic diagnostic = new Diagnostic.Empty();
 
         foreach (var matcher in Matches.Value) {
             var value = matcher.Match(tokens, n + advance);
             matches.Add(value);
+            diagnostic = value.Diagnostic;
 
             if (value is Matchlet.Error)
-                return new Matchlet.Error(this, new Diagnostic.Empty(), matches, value.MaxPeek);
+                return new Matchlet.Error(this, diagnostic, matches, value.MaxPeek);
             advance += value.Advance;
             maxPeek = value.MaxPeek;
         }
 
-        return new Matchlet.List(this, new Diagnostic.Empty(), matches, maxPeek, advance);
+        return new Matchlet.List(this, diagnostic, matches, maxPeek, advance);
     }
 }
 
@@ -51,16 +53,38 @@ public record OrMatcher(string Name, LazyInitializer<List<Matcher>> Matches) : M
     public override Matchlet Match(Token[] tokens, int n = 0) {
         int maxPeek = n;
         var children = new List<Matchlet>();
+        Diagnostic diagnostic = new Diagnostic.Empty();
 
         foreach (var matcher in Matches.Value) {
             var match = matcher.Match(tokens, n);
             children.Add(match);
+            diagnostic = match.Diagnostic;
 
             if (match is not Matchlet.Error)
-                return new Matchlet.Or(this, new Diagnostic.Empty(), children, match.MaxPeek, match.Advance);
+                return new Matchlet.Or(this, diagnostic, children, match.MaxPeek, match.Advance);
             maxPeek = match.MaxPeek;
         }
-        return new Matchlet.Error(this, new Diagnostic.Empty(), children, maxPeek);
+        return new Matchlet.Error(this, diagnostic, children, maxPeek);
+    }
+}
+
+public record RepeatingMatcher(string Name, LazyInitializer<Matcher> Matcher) : Matcher(Name) {
+    public RepeatingMatcher(string Name, LazyInitializer<Matcher>.Initializer init) : this(Name, new LazyInitializer<Matcher>(init)) {}
+
+    public override Matchlet Match(Token[] tokens, int n = 0) {
+        int maxPeek = n;
+        int advance = 0;
+        var matches = new List<Matchlet>();
+
+        while (true) {
+            var value = Matcher.Value.Match(tokens, n + advance);
+            matches.Add(value);
+
+            if (value is Matchlet.Error)
+                return new Matchlet.Repeat(this, value.Diagnostic, matches, maxPeek, advance);
+            advance += value.Advance;
+            maxPeek = value.MaxPeek;
+        }
     }
 }
 

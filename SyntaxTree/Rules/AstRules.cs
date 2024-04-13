@@ -1,7 +1,6 @@
-using Lang.SyntaxTree.Rules;
 using Lang.Tokenize;
 
-namespace Lang.SyntaxTree;
+namespace Lang.SyntaxTree.Rules;
 
 public static class AstRules {
     public static readonly Matcher Null = new NullMatcher("Null");
@@ -29,19 +28,30 @@ public static class AstRules {
         TokenType.Symbol.Mul.Matcher,
         TokenType.Symbol.Div.Matcher,
         TokenType.Symbol.Mod.Matcher,
+        TokenType.Symbol.Shl.Matcher,
+        TokenType.Symbol.Shr.Matcher,
+        TokenType.Symbol.BitOr.Matcher,
+        TokenType.Symbol.BitAnd.Matcher,
+        TokenType.Symbol.BitXor.Matcher,
+        TokenType.Symbol.BoolOr.Matcher,
+        TokenType.Symbol.BoolAnd.Matcher,
+        TokenType.Symbol.BoolXor.Matcher,
+        TokenType.Symbol.Equal.Matcher,
+        TokenType.Symbol.NotEqual.Matcher,
+        TokenType.Symbol.GreaterEqual.Matcher,
+        TokenType.Symbol.LessEqual.Matcher,
+        TokenType.Symbol.AngleOpen.Matcher,
+        TokenType.Symbol.AngleClose.Matcher,
     ]);
 
     public static readonly Matcher Term = new ListMatcher("Term", () => [
         BinOp,
-        Expression!
+        Value
     ]);
 
     public static readonly Matcher Expression = new ListMatcher("Expression", () => [
         Value,
-        new OrMatcher("Terms", () => [
-            Term,
-            Null
-        ])
+        new RepeatingMatcher("Terms", () => Term)
     ]);
 
     public static readonly Matcher Start = new ListMatcher("Start", () => [

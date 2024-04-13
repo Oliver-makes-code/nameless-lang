@@ -6,14 +6,17 @@ public static class Tokenizer {
     public static IEnumerable<Token> Tokenize(string path, string source) {
         var parser = new StringParser(path, source);
 
-        while (parser.Current() != null)
-            yield return ParseSignleToken(parser);
+        while (parser.Current() != null) {
+            var value = ParseSignleToken(parser);
+            if (value != null)
+                yield return value;
+        }
 
         parser.Checkout();
         yield return new Token(TokenType.Eof, parser.Commit());
     }
 
-    private static Token ParseSignleToken(StringParser parser) {
+    private static Token? ParseSignleToken(StringParser parser) {
         parser.Checkout();
 
         if (parser.IsAny([' ', '\t', '\n'])) {
@@ -22,6 +25,9 @@ public static class Tokenizer {
             while (parser.IsAny([' ', '\t']));
             parser.Commit();
             parser.Checkout();
+
+            if (parser.Current() == null)
+                return null;
         }
 
         if (TokenType.Symbol.Is(parser, out var symbol))
@@ -31,7 +37,7 @@ public static class Tokenizer {
             parser.ConsumeFunc(c => char.IsAsciiLetterOrDigit(c) || c == '_');
             var view = parser.Commit();
             var value = view.Value;
-            if (TokenType.Keyword.Is(value, out var keyword))
+            if (TokenType.Keyword.IsValue(value, out var keyword))
                 return new Token(keyword, view);
             return new Token(new TokenType.Identifier(value), view);
         }

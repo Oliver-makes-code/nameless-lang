@@ -53,6 +53,26 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
         }
     }
 
+    public record Repeat(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
+        public override string PrettyString(int indent = 0) {
+            if (Matches.Count == 0)
+                return $"Repeat<{Rule.Name}>[{Diagnostic}]";
+
+            var s = $"Repeat<{Rule.Name}>[{Diagnostic}](";
+            for (int i = 0; i < Matches.Count; i++) {
+                s += "\n";
+                s += new string(' ', (indent+1) * 2);
+                s += Matches[i].PrettyString(indent+1);
+                if (i < Matches.Count - 1)
+                    s += "," ;
+            }
+            s += "\n";
+            s += new string(' ', indent * 2);
+            s += ")";
+            return s;
+        }
+    }
+
     public record Reference(Matcher Rule, Diagnostic Diagnostic, Matchlet Child) : Matchlet(Rule, Diagnostic, Child.MaxPeek, Child.Advance) {
         public override string PrettyString(int indent = 0) {
             var s = $"Reference<{Rule.Name}>[{Diagnostic}](\n";

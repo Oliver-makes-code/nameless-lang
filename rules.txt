@@ -1,11 +1,11 @@
 I'm only really using this to think about rules in a more abstract manner
 
-Expression = Value (Term|Null)
-Value = Number | String | Symbol(() Expression Symbol())
-Term = Operator Expression
+Expression = Value [Term]
+Value = Number | String | Identifier | Symbol("(") Expression Symbol(")")
+Term = Operator Value
 
 Declarator = Type Identifier Initializer?
 Initializer = VariableInitializer
-VariableInitializer = Symbol(=) Expression
+VariableInitializer = Symbol("=") Expression
 
-Type = Identifier | Keyword(var)
+Type = Identifier | Keyword("var")
