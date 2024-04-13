@@ -1,8 +1,8 @@
 I'm only really using this to think about rules in a more abstract manner
 
-Expression = Value (Terms|Null)
+Expression = Value (Term|Null)
 Value = Number | String | Symbol(() Expression Symbol())
-Terms = Operator Expression
+Term = Operator Expression
 
 Declarator = Type Identifier Initializer?
 Initializer = VariableInitializer
