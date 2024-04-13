@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Lang.SyntaxTree.Rules;
 using Lang.Util;
 
 namespace Lang.Tokenize;
@@ -10,9 +11,13 @@ public record Token(TokenType Type, StringView Src) {
 
 public record TokenType {
     public readonly string Name;
+
+    public readonly Matcher Matcher;
     
     private TokenType(string name) {
         Name = name;
+
+        Matcher = new TokenValueMatcher(Name, this);
     }
 
     public record Keyword : TokenType {
@@ -53,7 +58,10 @@ public record TokenType {
         public static readonly Keyword F32 = new("f32");
         public static readonly Keyword F64 = new("f64");
 
+        public static readonly Keyword Discard = new("_");
+
         public readonly string Value;
+
         private Keyword(string value) : base(value) {
             Value = value;
             Values[value] = this;
@@ -148,16 +156,22 @@ public record TokenType {
     }
 
     public record Number<T>(T Value) : TokenType("Number") where T : struct {
+        public static readonly Matcher TypeMatcher = new TokenTypeMatcher<Number<T>>("Number");
+
         public override string ToString()
             => $"Number({Value})";
     }
 
     public record String(string Value) : TokenType("String") {
+        public static readonly Matcher TypeMatcher = new TokenTypeMatcher<String>("String");
+
         public override string ToString()
             => $"String(\"{Value}\")";
     }
 
     public record Identifier(string Value) : TokenType("Identifier") {
+        public static readonly Matcher TypeMatcher = new TokenTypeMatcher<Identifier>("Identifier");
+
         public override string ToString()
             => $"Identifier(\"{Value}\")";
     }
