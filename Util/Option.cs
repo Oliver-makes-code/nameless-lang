@@ -10,7 +10,7 @@ public record Option<T> {
     private Option() {}
 
     public T Unwrap()
-        => this is Some s ? s.Value : throw new ArgumentNullException("Called unwrap on None optional.");
+        => this is Some s ? s.Value : throw new ArgumentNullException("Called Unwrap on None Optional.");
     
     public T UnwrapOr(T value)
         => this is Some s ? s.Value : value;
