@@ -13,3 +13,14 @@ T AddSelf(T n) {
 
 Aside from the syntax, generics work mostly like they do in C#.
 Instead of `struct` for value types, we use `value`.
+
+Having multiple generics is defined as follows
+
+```
+where
+    TFirst : Thing,
+    TSecond : OtherThing
+TFirst DoSomething(TSecond) {
+    //...
+}
+```

@@ -63,3 +63,13 @@ var value = ExternalClass {
 // Turns into
 var value = new ExternalClass(1, 2);
 ```
+
+We have monadic types, made using the `variants` keyword
+
+```
+where TOk, TErr
+variants Result {
+    Ok(TOk),
+    Err(TErr)
+}
+```
