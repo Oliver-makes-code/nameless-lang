@@ -1,7 +1,9 @@
+using Lang.SyntaxTree.Ast;
 using Lang.SyntaxTree.Rules;
+using Lang.Util;
 
 namespace Lang.SyntaxTree.Visitor;
 
-public abstract record Visitor(Matcher Rule) {
-    public abstract void Visit(Matchlet match);
+public interface Visitor {
+    public Result<AstNode, Diagnostic> Visit(Matchlet match);
 }

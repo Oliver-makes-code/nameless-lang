@@ -6,11 +6,17 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
     public record Null(Matcher Rule, Diagnostic Diagnostic, int MaxPeek) : Matchlet(Rule, Diagnostic, MaxPeek, 0) {
         public override string PrettyString(int indent = 0)
             => $"Null[{Diagnostic}]";
+
+        public override string ToString()
+            => PrettyString();
     }
 
     public record Token(Matcher Rule, Diagnostic Diagnostic, Tokenize.Token Value, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
         public override string PrettyString(int indent = 0)
             => $"Token<{Rule.Name}>[{Diagnostic}]({Value})";
+
+        public override string ToString()
+            => PrettyString();
     }
 
     public record List(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
