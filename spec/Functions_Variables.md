@@ -18,4 +18,18 @@ mut i32 x = 5;
 x++;
 ```
 
+Value types can be passed by-reference into functions by using the `ref` keyword.
 
+```
+void DoSomething(ref u32 x) {
+    Print(x);
+}
+```
+
+If you wanna modify the referenced variable, you need to have a `ref mut`
+
+```
+void Increment(ref mut u32 x) {
+    x++;
+}
+```

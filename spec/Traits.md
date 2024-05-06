@@ -24,7 +24,7 @@ For any object (including classes):
 ```
 impl YourTrait for SomeClass {
     void DoSomething() {
-        print("owo");
+        Print("owo");
     }
 }
 ```
@@ -34,7 +34,7 @@ For classes:
 ```
 class SomeClass impl YourTrait {
     void DoSomething() {
-        print("owo");
+        Print("owo");
     }
 }
 ```
