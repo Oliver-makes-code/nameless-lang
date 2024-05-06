@@ -25,7 +25,7 @@ public class OperatorVisitor : Visitor {
         if (list.Matches.Last() is Matchlet.Error err)
             return new Result<AstNode, Diagnostic>.Err(err.Diagnostic);
         
-        bool end = list.Matches[0].Rule == AstRules.Value;
+        bool end = list.Matches[0].Rule == ExpressionRules.Value;
 
         Func<Matchlet, Result<AstNode, Diagnostic>> visit = end ? ValueVisitor.Instance.Visit : Visit;
 

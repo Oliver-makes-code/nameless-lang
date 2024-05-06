@@ -5,6 +5,13 @@ namespace Lang.SyntaxTree.Rules;
 public static class AstRules {
     public static readonly Matcher Null = new NullMatcher("Null");
 
+    public static readonly Matcher Start = new ListMatcher("Start", () => [
+        ExpressionRules.Expression,
+        TokenType.Eof.Matcher
+    ]);
+}
+
+public static class ExpressionRules {
     public static readonly Matcher Parenthesis = new ListMatcher("Parenthesis", () => [
         TokenType.Symbol.ParenOpen.Matcher,
         Expression!,
@@ -20,14 +27,11 @@ public static class AstRules {
     ]);
 
     public static readonly Matcher Expression = new ListMatcher("Expression", () => [
-        BinPrecedence1
+        OperatorRules.BinPrecedence1
     ]);
+}
 
-    public static readonly Matcher Start = new ListMatcher("Start", () => [
-        Expression,
-        TokenType.Eof.Matcher
-    ]);
-
+public static class OperatorRules {
     public static readonly Matcher BinPrecedence1 = new ListMatcher("BinPrecedence1", () => [
         BinPrecedence2,
         new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
@@ -109,10 +113,10 @@ public static class AstRules {
     ]);
 
     public static readonly Matcher BinPrecedence11 = new ListMatcher("BinPrecedence11", () => [
-        Value,
+        ExpressionRules.Value,
         new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence11Ops,
-            Value
+            ExpressionRules.Value
         ]))
     ]);
 
