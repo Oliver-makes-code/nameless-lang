@@ -50,7 +50,7 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
                 s += new string(' ', (indent+1) * 2);
                 s += Matches[i].PrettyString(indent+1);
                 if (i < Matches.Count - 1)
-                    s += "," ;
+                    s += ",";
             }
             s += "\n";
             s += new string(' ', indent * 2);
@@ -70,7 +70,7 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
                 s += new string(' ', (indent+1) * 2);
                 s += Matches[i].PrettyString(indent+1);
                 if (i < Matches.Count - 1)
-                    s += "," ;
+                    s += ",";
             }
             s += "\n";
             s += new string(' ', indent * 2);
@@ -102,7 +102,7 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
                 s += new string(' ', (indent+1) * 2);
                 s += Matches[i].PrettyString(indent+1);
                 if (i < Matches.Count - 1)
-                    s += "," ;
+                    s += ",";
             }
             s += "\n";
             s += new string(' ', indent * 2);

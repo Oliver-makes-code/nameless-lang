@@ -40,13 +40,27 @@ public record ValueNode(
 }
 
 public record InvokeNode(
-    ExpressionNode Value
+    ExpressionNode Value,
+    List<ExpressionNode> Parameters
 ) : ExpressionNode {
     public string PrettyString(int indent = 0) {
         string output = "Invoke(\n";
         output += new string(' ', (indent+1) * 2);
         output += "value: ";
         output += Value.PrettyString(indent+1);
+        output += ",\n";
+        output += new string(' ', (indent+1) * 2);
+        output += "parameters: [";
+        for (int i = 0; i < Parameters.Count; i++) {
+            output += "\n";
+            output += new string(' ', (indent+2) * 2);
+            output += Parameters[i].PrettyString(indent+2);
+            if (i < Parameters.Count - 1)
+                output += ",";
+        }
+        output += "\n";
+        output += new string(' ', (indent+1) * 2);
+        output += "]";
         output += "\n";
         output += new string(' ', indent * 2);
         output += ")";

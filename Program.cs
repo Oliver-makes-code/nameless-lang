@@ -10,8 +10,6 @@ public static class Program {
 
         var match = (Matchlet.List) AstRules.Start.Match(tokens);
 
-        Console.WriteLine(match.PrettyString());
-
         Console.WriteLine(OperatorVisitor.Instance.Visit(match.Matches[0]).Unwrap().PrettyString());
     }
 }

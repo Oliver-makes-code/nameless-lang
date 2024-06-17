@@ -50,17 +50,42 @@ public class ValueFuncVisitor : Visitor {
         if (or.Matches.Count == 2)
             return ValueVisitor.Instance.Visit(or.Matches[1]);
         
-        var func = or.Matches[0];
-
-        if (func is not Matchlet.List list)
-            throw new ArgumentException("Should be Matchlet.list", "match.Matches[0]");
+        var func = (Matchlet.List) or.Matches[0];
         
-        var value = ValueVisitor.Instance.Visit(list.Matches[0]);
+        var value = ValueVisitor.Instance.Visit(func.Matches[0]);
 
         if (value.IsErr)
             return value;
         
-        return new Result<AstNode, Diagnostic>.Ok(new InvokeNode((value.Unwrap() as ExpressionNode)!));
+        var parametersMatch = (Matchlet.Or) func.Matches[1];
+
+        if (parametersMatch.Matches.Count == 2)
+            return new Result<AstNode, Diagnostic>.Ok(new InvokeNode((value.Unwrap() as ExpressionNode)!, []));
+        
+        List<ExpressionNode> exprs = [];
+
+        var parametersList = (Matchlet.List) parametersMatch.Matches[0];
+
+        var parametersRepeat = (Matchlet.Repeat) parametersList.Matches[1];
+
+        for (int i = 0; i < parametersRepeat.Matches.Count - 1; i++) {
+            var parameter = (Matchlet.List) parametersRepeat.Matches[i];
+            var result = OperatorVisitor.Instance.Visit(parameter.Matches[0]);
+
+            if (result.IsErr)
+                return result;
+
+            exprs.Add((ExpressionNode) result.Unwrap());
+        }
+
+        var final = OperatorVisitor.Instance.Visit(parametersList.Matches[2]);
+
+        if (final.IsErr)
+            return final;
+
+        exprs.Add((ExpressionNode) final.Unwrap());
+
+        return new Result<AstNode, Diagnostic>.Ok(new InvokeNode((ExpressionNode) value.Unwrap(), exprs));
     }
 }
 
