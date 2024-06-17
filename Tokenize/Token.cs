@@ -137,6 +137,8 @@ public record TokenType {
         public static readonly Symbol GreaterEqual = new("GreaterEqual", ">=");
         public static readonly Symbol LessEqual    = new("LessEqual",    "<=");
 
+        public static readonly Symbol Comma = new("Comma", ",");
+
         public static readonly Symbol Dot         = new("Dot",         ".");
         public static readonly Symbol Range       = new("Range",       "..");
         public static readonly Symbol RangeFrom   = new("RangeFrom",   "<..");

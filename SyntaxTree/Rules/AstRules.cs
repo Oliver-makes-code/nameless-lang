@@ -9,6 +9,11 @@ public static class AstRules {
         ExpressionRules.Expression,
         TokenType.Eof.Matcher
     ]);
+
+    public static readonly Matcher EmptyParens = new ListMatcher("EmptyParens", () => [
+        TokenType.Symbol.ParenOpen.Matcher,
+        TokenType.Symbol.ParenClose.Matcher
+    ]);
 }
 
 public static class ExpressionRules {
@@ -28,6 +33,21 @@ public static class ExpressionRules {
 
     public static readonly Matcher Expression = new ListMatcher("Expression", () => [
         OperatorRules.BinPrecedence1
+    ]);
+}
+
+public static class FunctionCallRules {
+    public static readonly Matcher FuncArgs = new OrMatcher("FuncArgs", () => [
+        new ListMatcher("FuncArgsFull", () => [
+            TokenType.Symbol.ParenOpen.Matcher,
+            new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
+                ExpressionRules.Expression,
+                TokenType.Symbol.Comma.Matcher
+            ])),
+            ExpressionRules.Expression,
+            TokenType.Symbol.ParenClose.Matcher
+        ]),
+        AstRules.EmptyParens
     ]);
 }
 

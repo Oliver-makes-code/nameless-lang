@@ -1,20 +1,21 @@
 # Objects
 
 We have standard OO classes, in order to interoperate with the host runtime.
+These are only ever reference types.
 
 ```
-public class YourClass {
-    public i32 x;
-    public string y;
+pub class YourClass {
+    pub i32 x;
+    pub string y;
 }
 ```
 
 We also have structs, which are value types
 
 ```
-public struct YourStruct {
-    public i32 x;
-    public string y;
+pub struct YourStruct {
+    pub i32 x;
+    pub string y;
 }
 ```
 
@@ -31,7 +32,7 @@ If you're extending a class, you can initialize that class with the `base` prope
 
 ```
 class ChildClass : YourClass {
-    public bool z;
+    pub bool z;
 }
 
 var value = YourClass {
@@ -47,8 +48,8 @@ If you're constructing an externally defined object, you use the same syntax
 
 ```
 // C#
-public class ExternalClass {
-    public ExternalClass(int x, int y) {
+pub class ExternalClass {
+    pub ExternalClass(int x, int y) {
         Console.WriteLine(x);
         Console.WriteLine(y);
     }
