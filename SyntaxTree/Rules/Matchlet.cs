@@ -41,6 +41,8 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
     }
 
     public record Or(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
+        public Matchlet Successful => Matches[Matches.Count-1];
+        
         public override string PrettyString(int indent = 0) {
             if (Matches.Count == 0)
                 return $"Or<{Rule.Name}>[{Diagnostic}]";

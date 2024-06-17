@@ -42,9 +42,15 @@ public static class StatementRules {
         ExpressionRules.Expression
     ]);
 
-    public static readonly Matcher ExpressionLine = new ListMatcher("Line", () => [
+    public static readonly Matcher Return = new ListMatcher("Return", () => [
+        TokenType.Keyword.Return.Matcher,
+        new OptionalMatcher("ReturnValue", () => ExpressionRules.Expression)
+    ]);
+
+    public static readonly Matcher SemicolonTerminated = new OrMatcher("SemicolonTerminated", () => [
         ExpressionRules.Expression,
-        TokenType.Symbol.Semicolon.Matcher
+        Return,
+        TokenType.Keyword.Break.Matcher
     ]);
 
     public static readonly Matcher Statement = new OrMatcher("Statement", () => [
@@ -52,7 +58,18 @@ public static class StatementRules {
         Loop,
         ForIn,
         For,
-        ExpressionLine
+        new ListMatcher("Line", () => [
+            SemicolonTerminated,
+            TokenType.Symbol.Semicolon.Matcher
+        ])
+    ]);
+
+    public static readonly Matcher MatchArm = new ListMatcher("MatchArm", () => [
+        new OrMatcher("MatchPattern", () => [
+            TokenType.Keyword.Discard.Matcher
+        ]),
+        TokenType.Symbol.Arrow.Matcher,
+        Statement
     ]);
 
     public static readonly Matcher For = new ListMatcher("For", () => [

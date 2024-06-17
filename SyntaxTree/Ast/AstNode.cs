@@ -78,7 +78,7 @@ public record InvokeNode(
 
 public record ObjectAccessNode(
     ExpressionNode Value,
-    Matchlet.Token Parameter
+    List<Matchlet.Token> Parameters
 ) : ExpressionNode {
     public string PrettyString(int indent = 0) {
         string output = "ObjectAccess(\n";
@@ -87,8 +87,19 @@ public record ObjectAccessNode(
         output += Value.PrettyString(indent+1);
         output += ",\n";
         output += new string(' ', (indent+1) * 2);
-        output += "parameter: ";
-        output += Parameter.PrettyString(indent+1);
+        output += "parameters: [";
+        if (Parameters.Count > 0) {
+            for (int i = 0; i < Parameters.Count; i++) {
+                output += "\n";
+                output += new string(' ', (indent+2) * 2);
+                output += Parameters[i].PrettyString(indent+2);
+                if (i < Parameters.Count - 1)
+                    output += ",";
+            }
+            output += "\n";
+            output += new string(' ', (indent+1) * 2);
+        }
+        output += "]";
         output += "\n";
         output += new string(' ', indent * 2);
         output += ")";

@@ -5,7 +5,7 @@ using Lang.Util;
 namespace Lang.SyntaxTree.Rules;
 
 public abstract record Diagnostic {
-    public record UnexpectedToken(Tokenize.Token Token) : Diagnostic() {
+    public record UnexpectedToken(Token Token) : Diagnostic() {
         public override string ToString()
             => $"UnexpectedToken({Token})";
     }

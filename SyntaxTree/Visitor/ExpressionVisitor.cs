@@ -63,7 +63,11 @@ public class ValueFuncVisitor : Visitor {
             var access = accesses.Matches[i].As<Matchlet.Or>();
 
             if (access.Matches.Count == 2 && access.Matches[1] is not Matchlet.Error) {
-                output = new ObjectAccessNode(output, access.Matches[1].As<Matchlet.List>().Matches[1].As<Matchlet.Token>());
+                var token = access.Matches[1].As<Matchlet.List>().Matches[1].As<Matchlet.Token>();
+                if (output is ObjectAccessNode obj)
+                    obj.Parameters.Add(token);
+                else
+                    output = new ObjectAccessNode(output, [token]);
             } else {
                 var optInvoke = access.Matches[0].As<Matchlet.List>().Matches[1];
 
@@ -111,7 +115,7 @@ public class ValueVisitor : Visitor {
     public Result<AstNode, Diagnostic> Visit(Matchlet match) {
         var or = match.As<Matchlet.Or>();
 
-        var matched = or.Matches.Last();
+        var matched = or.Successful;
 
         if (matched is Matchlet.Error err)
             return err.Diagnostic;

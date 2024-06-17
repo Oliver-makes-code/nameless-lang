@@ -24,10 +24,9 @@ public record TokenType {
     public record Keyword : TokenType {
         public static readonly Dictionary<string, Keyword> Values = [];
 
-        // Type Definitions / Generics
+        // Type Definitions
         public static readonly Keyword Struct = new("struct");
         public static readonly Keyword Enum   = new("enum");
-        public static readonly Keyword Where  = new("where");
 
         // Modifiers
         public static readonly Keyword Pub    = new("pub");
@@ -42,14 +41,16 @@ public record TokenType {
         public static readonly Keyword Discard = new("_");
         
         // Control Flow
-        public static readonly Keyword If    = new("if");
-        public static readonly Keyword Else  = new("else");
-        public static readonly Keyword For   = new("for");
-        public static readonly Keyword While = new("while");
-        public static readonly Keyword Loop  = new("loop");
-        public static readonly Keyword In    = new("in");
-        public static readonly Keyword Is    = new("is");
-        public static readonly Keyword Match = new("match");
+        public static readonly Keyword If     = new("if");
+        public static readonly Keyword Else   = new("else");
+        public static readonly Keyword For    = new("for");
+        public static readonly Keyword While  = new("while");
+        public static readonly Keyword Loop   = new("loop");
+        public static readonly Keyword In     = new("in");
+        public static readonly Keyword Is     = new("is");
+        public static readonly Keyword Match  = new("match");
+        public static readonly Keyword Break  = new("break");
+        public static readonly Keyword Return = new("return");
 
         // Boolean
         public static readonly Keyword True  = new("true");
@@ -86,7 +87,7 @@ public record TokenType {
         public static Symbol[] Values { get; private set; } = [];
 
         public static readonly Symbol Semicolon = new("Semicolon", ";");
-        public static readonly Symbol Arrow = new("Arrow", "=>");
+        public static readonly Symbol Arrow     = new("Arrow", "=>");
 
         public static readonly Symbol BracketOpen  = new("BracketOpen",  "[");
         public static readonly Symbol BracketClose = new("BracketClose", "]");
