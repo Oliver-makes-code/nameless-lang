@@ -9,9 +9,14 @@ public static class Program {
     public static void Main() {
         var tokens = Tokenizer.Tokenize("test.txt", File.ReadAllText("test.txt")).ToArray();
 
-        var match = (Matchlet.List) AstRules.Start.Match(tokens);
+        var match = AstRules.Start.Match(tokens);
 
-        var tree = OperatorVisitor.Instance.Visit(match.Matches[0]).Unwrap();
+        if (match is Matchlet.Error) {
+            Console.WriteLine(match.PrettyString());
+            return;
+        }
+
+        var tree = OperatorVisitor.Instance.Visit(match.As<Matchlet.List>().Matches[0]).Unwrap();
 
         Console.WriteLine(tree.PrettyString());
     }

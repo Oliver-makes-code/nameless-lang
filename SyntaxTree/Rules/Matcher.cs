@@ -81,7 +81,7 @@ public record RepeatingMatcher(string Name, LazyInitializer<Matcher> Matcher) : 
             matches.Add(value);
 
             if (value is Matchlet.Error)
-                return new Matchlet.Repeat(this, value.Diagnostic, matches, maxPeek, advance);
+                return matches.Count == 1 ? value : new Matchlet.Repeat(this, value.Diagnostic, matches, maxPeek, advance);
             advance += value.Advance;
             maxPeek = value.MaxPeek;
         }

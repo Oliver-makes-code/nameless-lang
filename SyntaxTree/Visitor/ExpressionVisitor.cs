@@ -25,15 +25,17 @@ public class OperatorVisitor : Visitor {
         
         var expr = value.Unwrap();
 
-        var repeat = list.Matches[1].As<Matchlet.Repeat>();
+        if (list.Matches[1] is not Matchlet.Empty) {
+            var repeat = list.Matches[1].As<Matchlet.Repeat>();
 
-        foreach (var val in repeat.Matches) {
-            if (val is not Matchlet.List l)
-                break;
-            
-            var op = l.Matches[0].As<Matchlet.Or>().Matches.Last().As<Matchlet.Token>();
-            var v = visit(l.Matches[1]).Unwrap();
-            expr = new BinOpNode(expr.As<ExpressionNode>(), op, v.As<ExpressionNode>());
+            foreach (var val in repeat.Matches) {
+                if (val is not Matchlet.List l)
+                    break;
+                
+                var op = l.Matches[0].As<Matchlet.Or>().Matches.Last().As<Matchlet.Token>();
+                var v = visit(l.Matches[1]).Unwrap();
+                expr = new BinOpNode(expr.As<ExpressionNode>(), op, v.As<ExpressionNode>());
+            }
         }
 
         return Result<AstNode, Diagnostic>.FromOk(expr);
@@ -48,39 +50,58 @@ public class ValueFuncVisitor : Visitor {
 
         var value = ValueVisitor.Instance.Visit(list.Matches[0]);
 
-        var optInvoke = list.Matches[1];
+        var optAccesses = list.Matches[1];
 
-        if (optInvoke is Matchlet.Empty || value.IsErr)
+        if (optAccesses is Matchlet.Empty || value.IsErr)
             return value;
 
-        var invoke = optInvoke.As<Matchlet.List>();
-        var optArgs = invoke.Matches[1];
+        var output = value.Unwrap().As<ExpressionNode>();
 
-        if (optArgs is Matchlet.Empty)
-            return new InvokeNode(value.Unwrap().As<ExpressionNode>(), []);
+        var accesses = optAccesses.As<Matchlet.Repeat>();
         
-        var args = optArgs.As<Matchlet.List>();
-        var former = args.Matches[0].As<Matchlet.Repeat>();
+        for (int i = 0; i < accesses.Matches.Count - 1; i++) {
+            var access = accesses.Matches[i].As<Matchlet.Or>();
 
-        var argsList = new List<ExpressionNode>();
+            if (access.Matches.Count == 2 && access.Matches[1] is not Matchlet.Error) {
+                output = new ObjectAccessNode(output, access.Matches[1].As<Matchlet.List>().Matches[1].As<Matchlet.Token>());
+            } else {
+                var optInvoke = access.Matches[0].As<Matchlet.List>().Matches[1];
 
-        for (int i = 0; i < former.Matches.Count - 1; i++) {
-            var arg = OperatorVisitor.Instance.Visit(former.Matches[i].As<Matchlet.List>().Matches[0]);
+                if (optInvoke is Matchlet.Empty) {
+                    output = new InvokeNode(output, []);
+                    continue;
+                }
 
-            if (arg.IsErr)
-                return arg;
-            
-            argsList.Add(arg.Unwrap().As<ExpressionNode>());
+                var invoke = optInvoke.As<Matchlet.List>();
+
+                var args = new List<ExpressionNode>();
+                var optArgsList = invoke.Matches[0];
+
+                if (optArgsList is not Matchlet.Empty) {
+                    var argsList = optArgsList.As<Matchlet.Repeat>();
+
+                    for (int j = 0; j < argsList.Matches.Count - 1; j++) {
+                        var arg = OperatorVisitor.Instance.Visit(argsList.Matches[j].As<Matchlet.List>().Matches[0]);
+
+                        if (arg.IsErr)
+                            return arg;
+                        
+                        args.Add(arg.Unwrap().As<ExpressionNode>());
+                    }
+                }
+                
+                var final = OperatorVisitor.Instance.Visit(invoke.Matches[1]);
+
+                if (final.IsErr)
+                    return final;
+                
+                args.Add(final.Unwrap().As<ExpressionNode>());
+
+                output = new InvokeNode(output, args);
+            }
         }
 
-        var last = OperatorVisitor.Instance.Visit(args.Matches[1]);
-
-        if (last.IsErr)
-            return last;
-        
-        argsList.Add(last.Unwrap().As<ExpressionNode>());
-        
-        return new InvokeNode(value.Unwrap().As<ExpressionNode>(), argsList);
+        return Result<AstNode, Diagnostic>.FromOk(output);
     }
 }
 

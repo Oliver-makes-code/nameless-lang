@@ -130,9 +130,19 @@ public static class ExpressionRules {
         Parenthesis
     ]);
 
+    public static readonly Matcher ObjectReference = new ListMatcher("ObjectPath", () => [
+        TokenType.Symbol.Dot.Matcher,
+        TokenType.Identifier.TypeMatcher,
+    ]);
+
     public static readonly Matcher ValueInvoke = new ListMatcher("ValueInvoke", () => [
         Value,
-        new OptionalMatcher("Invoke", () => FuncArgs)
+        new OptionalMatcher("Optional", () => new RepeatingMatcher("ObjectInvoke", () => FuncAccess))
+    ]);
+
+    public static readonly Matcher FuncAccess = new OrMatcher("FuncAccess", () => [
+        FuncArgs,
+        ObjectReference
     ]);
 
     public static readonly Matcher Expression = OperatorRules.BinPrecedence1;
@@ -144,10 +154,10 @@ public static class ExpressionRules {
     ]);
 
     public static readonly Matcher FunArgsInner = new ListMatcher("FuncArgsInner", () => [
-        new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
+        new OptionalMatcher("OptionalArgs", () => new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
             Expression,
             TokenType.Symbol.Comma.Matcher
-        ])),
+        ]))),
         Expression
     ]);
 }
@@ -155,90 +165,90 @@ public static class ExpressionRules {
 public static class OperatorRules {
     public static readonly Matcher BinPrecedence1 = new ListMatcher("BinPrecedence1", () => [
         BinPrecedence2,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence1Ops,
             BinPrecedence2
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence2 = new ListMatcher("BinPrecedence2", () => [
         BinPrecedence3,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence2Ops,
             BinPrecedence3
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence3 = new ListMatcher("BinPrecedence3", () => [
         BinPrecedence4,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence3Ops,
             BinPrecedence4
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence4 = new ListMatcher("BinPrecedence4", () => [
         BinPrecedence5,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence4Ops,
             BinPrecedence5
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence5 = new ListMatcher("BinPrecedence5", () => [
         BinPrecedence6,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence5Ops,
             BinPrecedence6
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence6 = new ListMatcher("BinPrecedence6", () => [
         BinPrecedence7,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence6Ops,
             BinPrecedence7
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence7 = new ListMatcher("BinPrecedence7", () => [
         BinPrecedence8,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence7Ops,
             BinPrecedence8
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence8 = new ListMatcher("BinPrecedence8", () => [
         BinPrecedence9,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence8Ops,
             BinPrecedence9
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence9 = new ListMatcher("BinPrecedence9", () => [
         BinPrecedence10,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence9Ops,
             BinPrecedence10
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence10 = new ListMatcher("BinPrecedence10", () => [
         BinPrecedence11,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence10Ops,
             BinPrecedence11
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence11 = new ListMatcher("BinPrecedence11", () => [
         ExpressionRules.ValueInvoke,
-        new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
+        new OptionalMatcher("Opt", () => new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence11Ops,
             ExpressionRules.ValueInvoke
-        ]))
+        ])))
     ]);
 
     public static readonly Matcher BinPrecedence1Ops = new OrMatcher("BinPrecedence1Ops", () => [
