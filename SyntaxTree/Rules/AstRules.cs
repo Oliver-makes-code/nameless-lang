@@ -14,12 +14,84 @@ public static class AstRules {
         TokenType.Symbol.ParenOpen.Matcher,
         TokenType.Symbol.ParenClose.Matcher
     ]);
+
+    public static readonly Matcher Type = new OrMatcher("Type", () => [
+        TokenType.Keyword.Var.Matcher,
+        TokenType.Keyword.I8.Matcher,
+        TokenType.Keyword.I16.Matcher,
+        TokenType.Keyword.I32.Matcher,
+        TokenType.Keyword.I64.Matcher,
+        TokenType.Keyword.Ui8.Matcher,
+        TokenType.Keyword.Ui16.Matcher,
+        TokenType.Keyword.Ui32.Matcher,
+        TokenType.Keyword.Ui64.Matcher,
+        TokenType.Keyword.F32.Matcher,
+        TokenType.Keyword.F64.Matcher,
+        TokenType.Identifier.TypeMatcher
+    ]);
 }
 
 public static class StatementRules {
-    public static readonly Matcher Statement = new ListMatcher("Statement", () => [
-        
+    public static readonly Matcher PartialDeclarator = new ListMatcher("PartialDeclarator", () => [
+        AstRules.Type,
+        TokenType.Identifier.TypeMatcher
+    ]);
+    public static readonly Matcher FullDeclarator = new ListMatcher("FullDeclarator", () => [
+        PartialDeclarator,
+        TokenType.Symbol.Equal.Matcher,
+        ExpressionRules.Expression
+    ]);
+
+    public static readonly Matcher ExpressionLine = new ListMatcher("Line", () => [
+        ExpressionRules.Expression,
         TokenType.Symbol.Semicolon.Matcher
+    ]);
+
+    public static readonly Matcher Statement = new OrMatcher("Statement", () => [
+        While,
+        Loop,
+        ForIn,
+        For,
+        ExpressionLine
+    ]);
+
+    public static readonly Matcher For = new ListMatcher("For", () => [
+        TokenType.Keyword.For.Matcher,
+        FullDeclarator,
+        TokenType.Symbol.Comma.Matcher,
+        ExpressionRules.Expression,
+        TokenType.Symbol.Comma.Matcher,
+        Statement,
+        Block
+    ]);
+
+    public static readonly Matcher ForIn = new ListMatcher("ForIn", () => [
+        TokenType.Keyword.For.Matcher,
+        TokenType.Identifier.TypeMatcher,
+        TokenType.Keyword.In.Matcher,
+        ExpressionRules.Expression,
+        Block
+    ]);
+
+    public static readonly Matcher While = new ListMatcher("While", () => [
+        TokenType.Keyword.While.Matcher,
+        ExpressionRules.Expression,
+        Block
+    ]);
+
+    public static readonly Matcher Loop = new ListMatcher("Loop", () => [
+        TokenType.Keyword.Loop.Matcher,
+        Block
+    ]);
+
+    public static readonly Matcher IfChain = new ListMatcher("IfChain", () => [
+        
+    ]);
+
+    public static readonly Matcher Block = new ListMatcher("Block", () => [
+        TokenType.Symbol.BraceOpen.Matcher,
+        // TODO
+        TokenType.Symbol.BraceClose.Matcher
     ]);
 }
 
