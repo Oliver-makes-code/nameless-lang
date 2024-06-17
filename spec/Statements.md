@@ -51,7 +51,7 @@ Statements are one of the following
         DoSomething();
     }
     ```
-- For each statement
+- For in statement
     ```
     for i in 0..5 {
         Print(i);
