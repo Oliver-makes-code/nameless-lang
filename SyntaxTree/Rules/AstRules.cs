@@ -53,6 +53,14 @@ public static class StatementRules {
         TokenType.Keyword.Break.Matcher
     ]);
 
+    public static readonly Matcher SemicolonlessStatement = new OrMatcher("SemicolonlessStatement", () => [
+        While,
+        Loop,
+        ForIn,
+        For,
+        SemicolonTerminated,
+    ]);
+
     public static readonly Matcher Statement = new OrMatcher("Statement", () => [
         While,
         Loop,
@@ -78,7 +86,7 @@ public static class StatementRules {
         TokenType.Symbol.Comma.Matcher,
         ExpressionRules.Expression,
         TokenType.Symbol.Comma.Matcher,
-        Statement,
+        SemicolonlessStatement,
         Block
     ]);
 
