@@ -33,6 +33,12 @@ Statements are one of the following
         //...
     }
     ```
+- Match else statement
+    ```
+    match value => pattern else {
+        //...
+    }
+    ```
 - While match statement
     ```
     while match value => pattern {
