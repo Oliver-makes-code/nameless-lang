@@ -3,7 +3,13 @@ using Lang.Util;
 
 namespace Lang.SyntaxTree.Ast;
 
-public interface AstNode : IntoPretty;
+public interface AstNode : IntoPretty {
+    public T As<T>() where T : AstNode {
+        if (this is not T)
+            throw new ArgumentException($"Expected {typeof(T).Name}, got {GetType().Name}");
+        return (T) this;
+    }
+}
 
 public interface ExpressionNode : AstNode;
 

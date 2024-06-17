@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Lang.Util;
 
 namespace Lang.SyntaxTree.Rules;
@@ -108,9 +109,30 @@ public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek
             s += new string(' ', indent * 2);
             s += ")";
             return s;
-            
+        }
+    }
+
+    public record Empty(Matcher Rule, Diagnostic Diagnostic, Matchlet? FailedMatch, int MaxPeek) : Matchlet(Rule, Diagnostic, MaxPeek, 0) {
+        public override string PrettyString(int indent = 0) {
+            if (FailedMatch == null)
+                return $"Empty<{Rule.Name}>[{Diagnostic}]";
+
+            var s = $"Empty<{Rule.Name}>[{Diagnostic}](";
+            s += "\n";
+            s += new string(' ', (indent+1) * 2);
+            s += FailedMatch.PrettyString(indent+1);
+            s += "\n";
+            s += new string(' ', indent * 2);
+            s += ")";
+            return s;
         }
     }
 
     public abstract string PrettyString(int indent = 0);
+
+    public T As<T>() where T : Matchlet {
+        if (this is not T)
+            throw new ArgumentException($"Expected {typeof(T).Name}, got {GetType().Name}");
+        return (T) this;
+    }
 }

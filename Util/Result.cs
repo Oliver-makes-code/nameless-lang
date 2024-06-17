@@ -19,5 +19,17 @@ public record Result<T, E> {
         => this is Err { Value: var o } ? o : value;
     
     public E UnwrapErr()
-        =>this is Err { Value: var o } ? o : throw new ArgumentNullException("Called UnwrapErr on Ok Result.");
+        => this is Err { Value: var o } ? o : throw new ArgumentNullException("Called UnwrapErr on Ok Result.");
+
+    public static Result<T, E> FromOk(T t)
+        => t;
+
+    public static Result<T, E> FromErr(E e)
+        => e;
+
+    public static implicit operator Result<T, E> (T t)
+        => new Ok(t);
+    
+    public static implicit operator Result<T, E> (E e)
+        => new Err(e);
 }

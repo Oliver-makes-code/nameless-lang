@@ -84,8 +84,28 @@ public static class StatementRules {
         Block
     ]);
 
-    public static readonly Matcher IfChain = new ListMatcher("IfChain", () => [
-        
+    public static readonly Matcher If = new ListMatcher("If", () => [
+        IfSingle,
+        ElseIfRepeat,
+        new OptionalMatcher("Else", () => ElseSingle)
+    ]);
+
+    public static readonly Matcher ElseSingle = new ListMatcher("ElseSingle", () => [
+        TokenType.Keyword.Else.Matcher,
+        Block
+    ]);
+
+    public static readonly Matcher ElseIfSingle = new ListMatcher("ElseIfSingle", () => [
+        TokenType.Keyword.Else.Matcher,
+        IfSingle
+    ]);
+
+    public static readonly Matcher ElseIfRepeat = new RepeatingMatcher("ElseIfRepeat", () => ElseIfSingle);
+
+    public static readonly Matcher IfSingle = new ListMatcher("IfSingle", () => [
+        TokenType.Keyword.If.Matcher,
+        ExpressionRules.Expression,
+        Block
     ]);
 
     public static readonly Matcher Block = new ListMatcher("Block", () => [
@@ -110,27 +130,25 @@ public static class ExpressionRules {
         Parenthesis
     ]);
 
-    public static readonly Matcher ValueInvoke = new OrMatcher("ValueInvoke", () => [
-        new ListMatcher("Invoke", () => [
-            Value,
-            FuncArgs
-        ]),
-        Value
+    public static readonly Matcher ValueInvoke = new ListMatcher("ValueInvoke", () => [
+        Value,
+        new OptionalMatcher("Invoke", () => FuncArgs)
     ]);
 
     public static readonly Matcher Expression = OperatorRules.BinPrecedence1;
 
-    public static readonly Matcher FuncArgs = new OrMatcher("FuncArgs", () => [
-        new ListMatcher("FuncArgsFull", () => [
-            TokenType.Symbol.ParenOpen.Matcher,
-            new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
-                Expression,
-                TokenType.Symbol.Comma.Matcher
-            ])),
+    public static readonly Matcher FuncArgs = new ListMatcher("FuncArgs", () => [
+        TokenType.Symbol.ParenOpen.Matcher,
+        new OptionalMatcher("Inner", () => FunArgsInner),
+        TokenType.Symbol.ParenClose.Matcher
+    ]);
+
+    public static readonly Matcher FunArgsInner = new ListMatcher("FuncArgsInner", () => [
+        new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
             Expression,
-            TokenType.Symbol.ParenClose.Matcher
-        ]),
-        AstRules.EmptyParens
+            TokenType.Symbol.Comma.Matcher
+        ])),
+        Expression
     ]);
 }
 

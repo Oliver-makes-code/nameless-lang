@@ -92,3 +92,13 @@ public record NullMatcher(string Name) : Matcher(Name) {
     public override Matchlet Match(Token[] tokens, int n = 0)
         => new Matchlet.Null(this, new Diagnostic.Empty(), n);
 }
+
+public record OptionalMatcher(string Name, LazyInitializer<Matcher> Matcher) : Matcher(Name) {
+    public OptionalMatcher(string Name, LazyInitializer<Matcher>.Initializer init) : this(Name, new LazyInitializer<Matcher>(init)) {}
+    public override Matchlet Match(Token[] tokens, int n = 0) {
+        var value = Matcher.Value.Match(tokens, n);
+        if (value is Matchlet.Error)
+            return new Matchlet.Empty(this, value.Diagnostic, value, n);
+        return value;
+    }
+}
