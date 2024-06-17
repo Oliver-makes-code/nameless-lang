@@ -21,9 +21,8 @@ var value = YourStruct {
 We have monadic types, made using the `enum` keyword
 
 ```
-where TOk, TErr
-enum Result {
-    Ok(TOk),
-    Err(TErr)
+enum YourResult {
+    Ok(Thing),
+    Err(String)
 }
 ```

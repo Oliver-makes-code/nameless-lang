@@ -30,9 +30,10 @@ public record TokenType {
         public static readonly Keyword Where  = new("where");
 
         // Modifiers
-        public static readonly Keyword Pub = new("pub");
-        public static readonly Keyword Mut = new("mut");
-        public static readonly Keyword Ref = new("ref");
+        public static readonly Keyword Pub    = new("pub");
+        public static readonly Keyword Mut    = new("mut");
+        public static readonly Keyword Ref    = new("ref");
+        public static readonly Keyword Extern = new("extern");
 
         // Variables / Functions
         public static readonly Keyword Var = new("var");

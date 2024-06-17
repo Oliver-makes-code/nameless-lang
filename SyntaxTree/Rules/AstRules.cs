@@ -16,6 +16,13 @@ public static class AstRules {
     ]);
 }
 
+public static class StatementRules {
+    public static readonly Matcher Statement = new ListMatcher("Statement", () => [
+        
+        TokenType.Symbol.Semicolon.Matcher
+    ]);
+}
+
 public static class ExpressionRules {
     public static readonly Matcher Parenthesis = new ListMatcher("Parenthesis", () => [
         TokenType.Symbol.ParenOpen.Matcher,
@@ -34,23 +41,21 @@ public static class ExpressionRules {
     public static readonly Matcher ValueInvoke = new OrMatcher("ValueInvoke", () => [
         new ListMatcher("Invoke", () => [
             Value,
-            FunctionCallRules.FuncArgs
+            FuncArgs
         ]),
         Value
     ]);
 
     public static readonly Matcher Expression = OperatorRules.BinPrecedence1;
-}
 
-public static class FunctionCallRules {
     public static readonly Matcher FuncArgs = new OrMatcher("FuncArgs", () => [
         new ListMatcher("FuncArgsFull", () => [
             TokenType.Symbol.ParenOpen.Matcher,
             new RepeatingMatcher("FuncParams", () => new ListMatcher("FuncParam", () => [
-                ExpressionRules.Expression,
+                Expression,
                 TokenType.Symbol.Comma.Matcher
             ])),
-            ExpressionRules.Expression,
+            Expression,
             TokenType.Symbol.ParenClose.Matcher
         ]),
         AstRules.EmptyParens
