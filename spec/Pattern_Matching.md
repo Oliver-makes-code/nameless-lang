@@ -13,25 +13,29 @@ There are a couple main types of pattern matching, including
 
 - Object (Tuple)
     ```
-    Object(var value) = thing
-    Object(_) = thing
-    Object(true) = thing
+    Object(var value) => thing
+    Object(_) => thing
+    Object(true) => thing
     ```
 - Object (Struct)
     ```
-    Object { var value } = thing
-    Object { value: _ } = thing
-    Object { value: var t } = thing
+    Object { var value } => thing
+    Object { value: _ } => thing
+    Object { value: var t } => thing
     ```
 - Value
     ```
-    15 = thing
-    "Hello, World!" = thing
+    15 => thing
+    "Hello, World!" => thing
     ```
 - Array Deconstruction
     ```
-    [var first, var second, var third, ..._] = thing
-    [var first, ...var others, var last] = thing
-    [..._, var last] == thing
-    [..._, true] = thing
+    [var first, var second, var third, ..._] => thing
+    [var first, ...var others, var last] => thing
+    [..._, var last] => thing
+    [..._, true] => thing
+    ```
+- Discard
+    ```
+    _ => thing
     ```
