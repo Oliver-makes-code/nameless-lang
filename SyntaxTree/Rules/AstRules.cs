@@ -31,9 +31,15 @@ public static class ExpressionRules {
         Parenthesis
     ]);
 
-    public static readonly Matcher Expression = new ListMatcher("Expression", () => [
-        OperatorRules.BinPrecedence1
+    public static readonly Matcher ValueInvoke = new OrMatcher("ValueInvoke", () => [
+        new ListMatcher("Invoke", () => [
+            Value,
+            FunctionCallRules.FuncArgs
+        ]),
+        Value
     ]);
+
+    public static readonly Matcher Expression = OperatorRules.BinPrecedence1;
 }
 
 public static class FunctionCallRules {
@@ -133,10 +139,10 @@ public static class OperatorRules {
     ]);
 
     public static readonly Matcher BinPrecedence11 = new ListMatcher("BinPrecedence11", () => [
-        ExpressionRules.Value,
+        ExpressionRules.ValueInvoke,
         new RepeatingMatcher("Terms", () => new ListMatcher("Term", () => [
             BinPrecedence11Ops,
-            ExpressionRules.Value
+            ExpressionRules.ValueInvoke
         ]))
     ]);
 

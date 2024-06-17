@@ -8,23 +8,23 @@ public interface AstNode : IntoPretty;
 public interface ExpressionNode : AstNode;
 
 public record BinOpNode(
-    ExpressionNode left,
-    Matchlet.Token op,
-    ExpressionNode right
+    ExpressionNode Left,
+    Matchlet.Token Op,
+    ExpressionNode Right
 ) : ExpressionNode {
     public string PrettyString(int indent = 0) {
         string output = "BinOp(\n";
         output += new string(' ', (indent+1) * 2);
         output += "left: ";
-        output += left.PrettyString(indent+1);
+        output += Left.PrettyString(indent+1);
         output += ",\n";
         output += new string(' ', (indent+1) * 2);
         output += "op: ";
-        output += op.PrettyString(indent+1);
+        output += Op.PrettyString(indent+1);
         output += ",\n";
         output += new string(' ', (indent+1) * 2);
         output += "right: ";
-        output += right.PrettyString(indent+1);
+        output += Right.PrettyString(indent+1);
         output += "\n";
         output += new string(' ', indent * 2);
         output += ")";
@@ -32,11 +32,24 @@ public record BinOpNode(
     }
 }
 
-
 public record ValueNode(
-    Matchlet.Token value
+    Matchlet.Token Value
 ) : ExpressionNode {
     public string PrettyString(int indent = 0)
-        => value.PrettyString(indent);
+        => Value.PrettyString(indent);
 }
 
+public record InvokeNode(
+    ExpressionNode Value
+) : ExpressionNode {
+    public string PrettyString(int indent = 0) {
+        string output = "Invoke(\n";
+        output += new string(' ', (indent+1) * 2);
+        output += "value: ";
+        output += Value.PrettyString(indent+1);
+        output += "\n";
+        output += new string(' ', indent * 2);
+        output += ")";
+        return output;
+    }
+}

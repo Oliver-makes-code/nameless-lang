@@ -33,3 +33,11 @@ void Increment(ref mut u32 x) {
     x++;
 }
 ```
+
+If you want to pass in a function as a parameter, you can use the `func` keyword
+
+```
+int Call(func int(int) f, int v) {
+    return f(v);
+}
+```

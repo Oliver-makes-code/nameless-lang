@@ -25,13 +25,9 @@ public record TokenType {
         public static readonly Dictionary<string, Keyword> Values = [];
 
         // Type Definitions / Generics
-        public static readonly Keyword Class  = new("class");
         public static readonly Keyword Struct = new("struct");
         public static readonly Keyword Enum   = new("enum");
-        public static readonly Keyword Trait  = new("trait");
         public static readonly Keyword Where  = new("where");
-        public static readonly Keyword Base   = new("base");
-        public static readonly Keyword This   = new("this");
 
         // Modifiers
         public static readonly Keyword Pub = new("pub");

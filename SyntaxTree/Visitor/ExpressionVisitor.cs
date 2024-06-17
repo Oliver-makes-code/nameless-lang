@@ -4,17 +4,6 @@ using Lang.Util;
 
 namespace Lang.SyntaxTree.Visitor;
 
-public class ExpressionVisitor : Visitor {
-    public static readonly ExpressionVisitor Instance = new();
-
-    public Result<AstNode, Diagnostic> Visit(Matchlet match) {
-        if (match is not Matchlet.List list)
-            throw new ArgumentException("Should be Matchlet.List", nameof(match));
-
-        return OperatorVisitor.Instance.Visit(list.Matches[0]);
-    }
-}
-
 public class OperatorVisitor : Visitor {
     public static readonly OperatorVisitor Instance = new();
 
@@ -25,9 +14,9 @@ public class OperatorVisitor : Visitor {
         if (list.Matches.Last() is Matchlet.Error err)
             return new Result<AstNode, Diagnostic>.Err(err.Diagnostic);
         
-        bool end = list.Matches[0].Rule == ExpressionRules.Value;
+        bool end = list.Matches[0].Rule == ExpressionRules.ValueInvoke;
 
-        Func<Matchlet, Result<AstNode, Diagnostic>> visit = end ? ValueVisitor.Instance.Visit : Visit;
+        Func<Matchlet, Result<AstNode, Diagnostic>> visit = end ? ValueFuncVisitor.Instance.Visit : Visit;
 
         var value = visit(list.Matches[0]);
 
@@ -48,6 +37,30 @@ public class OperatorVisitor : Visitor {
         }
 
         return new Result<AstNode, Diagnostic>.Ok(expr);
+    }
+}
+
+public class ValueFuncVisitor : Visitor {
+    public static readonly ValueFuncVisitor Instance = new();
+
+    public Result<AstNode, Diagnostic> Visit(Matchlet match) {
+        if (match is not Matchlet.Or or)
+            throw new ArgumentException("Should be Matchlet.Or", nameof(match));
+        
+        if (or.Matches.Count == 2)
+            return ValueVisitor.Instance.Visit(or.Matches[1]);
+        
+        var func = or.Matches[0];
+
+        if (func is not Matchlet.List list)
+            throw new ArgumentException("Should be Matchlet.list", "match.Matches[0]");
+        
+        var value = ValueVisitor.Instance.Visit(list.Matches[0]);
+
+        if (value.IsErr)
+            return value;
+        
+        return new Result<AstNode, Diagnostic>.Ok(new InvokeNode((value.Unwrap() as ExpressionNode)!));
     }
 }
 
@@ -77,6 +90,6 @@ public class ParenthesisVisitor : Visitor {
         if (match is not Matchlet.List list)
             throw new ArgumentException("Should be Matchlet.List", nameof(match));
 
-        return ExpressionVisitor.Instance.Visit(list.Matches[1]);
+        return OperatorVisitor.Instance.Visit(list.Matches[1]);
     }
 }
