@@ -13,29 +13,39 @@ There are a couple main types of pattern matching, including
 
 - Object (Tuple)
     ```
-    Object(var value) => thing
-    Object(_) => thing
-    Object(true) => thing
+    Object(var value)
+    Object(_)
+    Object(true)
     ```
 - Object (Struct)
     ```
-    Object { var value } => thing
-    Object { value: _ } => thing
-    Object { value: var t } => thing
+    Object { var value }
+    Object { value: _ }
+    Object { value: var t }
     ```
 - Value
     ```
-    15 => thing
-    "Hello, World!" => thing
+    15
+    "Hello, World!"
     ```
 - Array Deconstruction
     ```
-    [var first, var second, var third, ..._] => thing
-    [var first, ...var others, var last] => thing
-    [..._, var last] => thing
-    [..._, true] => thing
+    [var first, var second, var third, ..._]
+    [var first, ...var others, var last]
+    [..._, var last]
+    [..._, true]
     ```
 - Discard
     ```
-    _ => thing
+    _
     ```
+- Multi-value
+    ```
+    [true, ..._], [..._, true]
+    1, 2
+    "Hello", "World"
+    Obj(true, var x), Obj(false, var x)
+    ```
+    - Note: Variables must have the same name and types when using multi-value patterns
+
+Patterns are

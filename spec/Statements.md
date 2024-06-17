@@ -13,6 +13,12 @@ Statements are one of the following
         //...
     }
     ```
+- While statement
+    ```
+    while thing {
+        DoSomething();
+    }
+    ```
 - Match statement
     ```
     match thing {
@@ -21,10 +27,16 @@ Statements are one of the following
         _ => Wildcard()
     }
     ```
-- While statement
+- If match statement
     ```
-    while thing {
-        DoSomething();
+    if match value => pattern {
+        //...
+    }
+    ```
+- While match statement
+    ```
+    while match value => pattern {
+        //...
     }
     ```
 - Loop statement
