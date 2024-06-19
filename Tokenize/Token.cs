@@ -142,6 +142,7 @@ public record TokenType : IntoValueString {
 
         public static readonly Symbol Dot         = new("Dot",         ".");
         public static readonly Symbol Range       = new("Range",       "..");
+        public static readonly Symbol Elipsis     = new("Elipsis",     "...");
         public static readonly Symbol RangeFrom   = new("RangeFrom",   "<..");
         public static readonly Symbol RangeTo     = new("RangeTo",     "..=");
         public static readonly Symbol RangeFromTo = new("RangeFromTo", "<..=");
@@ -202,4 +203,7 @@ public record TokenType : IntoValueString {
 
     public virtual ValueString IntoValueString()
         => new ValueStringBuilder.Struct("Token", Name).Build();
+
+    public static implicit operator Matcher (TokenType self)
+        => self.Matcher;
 }
