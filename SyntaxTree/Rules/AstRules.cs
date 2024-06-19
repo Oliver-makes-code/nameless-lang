@@ -10,11 +10,6 @@ public static class AstRules {
         TokenType.Eof.Matcher
     ]);
 
-    public static readonly Matcher EmptyParens = new ListMatcher("EmptyParens", () => [
-        TokenType.Symbol.ParenOpen.Matcher,
-        TokenType.Symbol.ParenClose.Matcher
-    ]);
-
     public static readonly Matcher Type = new OrMatcher("Type", () => [
         TokenType.Keyword.Var.Matcher,
         TokenType.Keyword.I8.Matcher,
@@ -66,18 +61,33 @@ public static class StatementRules {
         Loop,
         ForIn,
         For,
+        MatchElse,
         new ListMatcher("Line", () => [
             SemicolonTerminated,
             TokenType.Symbol.Semicolon.Matcher
         ])
     ]);
 
+    public static readonly Matcher MatchElse = new ListMatcher("MatchElse", () => [
+        MatchExpr,
+        TokenType.Keyword.Else.Matcher,
+        Block
+    ]);
+
+    public static readonly Matcher Pattern = new OrMatcher("Pattern", () => [
+        TokenType.Keyword.Discard.Matcher
+    ]);
+
     public static readonly Matcher MatchArm = new ListMatcher("MatchArm", () => [
-        new OrMatcher("MatchPattern", () => [
-            TokenType.Keyword.Discard.Matcher
-        ]),
+        Pattern,
         TokenType.Symbol.Arrow.Matcher,
         Statement
+    ]);
+
+    public static readonly Matcher MatchSingle = new ListMatcher("MatchSingle", () => [
+        ExpressionRules.Expression,
+        TokenType.Symbol.Arrow.Matcher,
+        Pattern
     ]);
 
     public static readonly Matcher For = new ListMatcher("For", () => [
@@ -98,9 +108,19 @@ public static class StatementRules {
         Block
     ]);
 
+    public static readonly Matcher MatchExpr = new ListMatcher("MatchExpr", () => [
+        TokenType.Keyword.Match.Matcher,
+        MatchSingle,
+    ]);
+
+    public static readonly Matcher MatchOrExpr = new OrMatcher("MatchOrExpr", () => [
+        MatchExpr,
+        ExpressionRules.Expression
+    ]);
+
     public static readonly Matcher While = new ListMatcher("While", () => [
         TokenType.Keyword.While.Matcher,
-        ExpressionRules.Expression,
+        MatchOrExpr,
         Block
     ]);
 
@@ -129,7 +149,7 @@ public static class StatementRules {
 
     public static readonly Matcher IfSingle = new ListMatcher("IfSingle", () => [
         TokenType.Keyword.If.Matcher,
-        ExpressionRules.Expression,
+        MatchOrExpr,
         Block
     ]);
 

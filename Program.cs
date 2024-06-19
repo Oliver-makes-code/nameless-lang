@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Lang.SyntaxTree.Rules;
 using Lang.SyntaxTree.Visitor;
 using Lang.Tokenize;
+using Lang.Util;
 
 public static class Program {
     public static void Main() {

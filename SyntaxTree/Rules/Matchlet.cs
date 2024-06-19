@@ -3,134 +3,65 @@ using Lang.Util;
 
 namespace Lang.SyntaxTree.Rules;
 
-public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek, int Advance) : IntoPretty {
+public abstract record Matchlet(Matcher Rule, Diagnostic Diagnostic, int MaxPeek, int Advance) : IntoValueString {
     public record Null(Matcher Rule, Diagnostic Diagnostic, int MaxPeek) : Matchlet(Rule, Diagnostic, MaxPeek, 0) {
-        public override string PrettyString(int indent = 0)
-            => $"Null[{Diagnostic}]";
-
-        public override string ToString()
-            => PrettyString();
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Struct("Null", Rule.Name, Diagnostic.ToString()).Build();
     }
 
     public record Token(Matcher Rule, Diagnostic Diagnostic, Tokenize.Token Value, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
-        public override string PrettyString(int indent = 0)
-            => $"Token<{Rule.Name}>[{Diagnostic}]({Value})";
-
-        public override string ToString()
-            => PrettyString();
+        public override ValueString IntoValueString()
+            => Value.IntoValueString();
     }
 
     public record List(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
-        public override string PrettyString(int indent = 0) {
-            if (Matches.Count == 0)
-                return $"List<{Rule.Name}>[{Diagnostic}]";
+        public Matchlet this[int idx] => Matches[idx];
 
-            var s = $"List<{Rule.Name}>[{Diagnostic}](";
-            for (int i = 0; i < Matches.Count; i++) {
-                s += "\n";
-                s += new string(' ', (indent+1) * 2);
-                s += Matches[i].PrettyString(indent+1);
-                if (i < Matches.Count - 1)
-                    s += "," ;
-            }
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
-        }
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("List", Rule.Name, Diagnostic.ToString())
+                .ArrayField([..Matches])
+                .Build();
     }
 
     public record Or(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
         public Matchlet Successful => Matches[Matches.Count-1];
-        
-        public override string PrettyString(int indent = 0) {
-            if (Matches.Count == 0)
-                return $"Or<{Rule.Name}>[{Diagnostic}]";
 
-            var s = $"Or<{Rule.Name}>[{Diagnostic}](";
-            for (int i = 0; i < Matches.Count; i++) {
-                s += "\n";
-                s += new string(' ', (indent+1) * 2);
-                s += Matches[i].PrettyString(indent+1);
-                if (i < Matches.Count - 1)
-                    s += ",";
-            }
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
-        }
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("List", Rule.Name, Diagnostic.ToString())
+                .ArrayField([..Matches])
+                .Build();
     }
 
     public record Repeat(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek, int Advance) : Matchlet(Rule, Diagnostic, MaxPeek, Advance) {
-        public override string PrettyString(int indent = 0) {
-            if (Matches.Count == 0)
-                return $"Repeat<{Rule.Name}>[{Diagnostic}]";
 
-            var s = $"Repeat<{Rule.Name}>[{Diagnostic}](";
-            for (int i = 0; i < Matches.Count; i++) {
-                s += "\n";
-                s += new string(' ', (indent+1) * 2);
-                s += Matches[i].PrettyString(indent+1);
-                if (i < Matches.Count - 1)
-                    s += ",";
-            }
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
-        }
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("List", Rule.Name, Diagnostic.ToString())
+                .ArrayField([..Matches])
+                .Build();
     }
 
     public record Reference(Matcher Rule, Diagnostic Diagnostic, Matchlet Child) : Matchlet(Rule, Diagnostic, Child.MaxPeek, Child.Advance) {
-        public override string PrettyString(int indent = 0) {
-            var s = $"Reference<{Rule.Name}>[{Diagnostic}](\n";
-            s += new string(' ', (indent+1) * 2);
-            s += Child.PrettyString(indent+1);
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
-        }
+        public override ValueString IntoValueString()
+            => Child.IntoValueString();
     }
 
     public record Error(Matcher Rule, Diagnostic Diagnostic, List<Matchlet> Matches, int MaxPeek) : Matchlet(Rule, Diagnostic, MaxPeek, 0) {
-        public override string PrettyString(int indent = 0) {
-            if (Matches.Count == 0)
-                return $"Error<{Rule.Name}>[{Diagnostic}]";
-
-            var s = $"Error<{Rule.Name}>[{Diagnostic}](";
-            for (int i = 0; i < Matches.Count; i++) {
-                s += "\n";
-                s += new string(' ', (indent+1) * 2);
-                s += Matches[i].PrettyString(indent+1);
-                if (i < Matches.Count - 1)
-                    s += ",";
-            }
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
-        }
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("List", Rule.Name, Diagnostic.ToString())
+                .ArrayField([..Matches])
+                .Build();
     }
 
     public record Empty(Matcher Rule, Diagnostic Diagnostic, Matchlet? FailedMatch, int MaxPeek) : Matchlet(Rule, Diagnostic, MaxPeek, 0) {
-        public override string PrettyString(int indent = 0) {
-            if (FailedMatch == null)
-                return $"Empty<{Rule.Name}>[{Diagnostic}]";
-
-            var s = $"Empty<{Rule.Name}>[{Diagnostic}](";
-            s += "\n";
-            s += new string(' ', (indent+1) * 2);
-            s += FailedMatch.PrettyString(indent+1);
-            s += "\n";
-            s += new string(' ', indent * 2);
-            s += ")";
-            return s;
+        public override ValueString IntoValueString() {
+            var builder = new ValueStringBuilder.Tuple("Empty", Rule.Name, Diagnostic.ToString());
+            if (FailedMatch != null)
+                builder.Field(FailedMatch);
+            return builder.Build();
         }
     }
 
-    public abstract string PrettyString(int indent = 0);
+    public abstract ValueString IntoValueString();
 
     public T As<T>() where T : Matchlet {
         if (this is not T)

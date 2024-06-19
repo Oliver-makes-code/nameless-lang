@@ -7,7 +7,7 @@ namespace Lang.SyntaxTree.Rules;
 public abstract record Diagnostic {
     public record UnexpectedToken(Token Token) : Diagnostic() {
         public override string ToString()
-            => $"UnexpectedToken({Token})";
+            => $"UnexpectedToken({Token.PrettyString()})";
     }
 
     public record Empty() : Diagnostic() {

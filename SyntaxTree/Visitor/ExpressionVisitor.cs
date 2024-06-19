@@ -14,27 +14,27 @@ public class OperatorVisitor : Visitor {
         if (list.Matches.Last() is Matchlet.Error err)
             return err.Diagnostic;
         
-        bool end = list.Matches[0].Rule == ExpressionRules.ValueInvoke;
+        bool end = list[0].Rule == ExpressionRules.ValueInvoke;
 
         Func<Matchlet, Result<AstNode, Diagnostic>> visit = end ? ValueFuncVisitor.Instance.Visit : Visit;
 
-        var value = visit(list.Matches[0]);
+        var value = visit(list[0]);
 
         if (value.IsErr)
             return value;
         
         var expr = value.Unwrap();
 
-        if (list.Matches[1] is not Matchlet.Empty) {
-            var repeat = list.Matches[1].As<Matchlet.Repeat>();
+        if (list[1] is not Matchlet.Empty) {
+            var repeat = list[1].As<Matchlet.Repeat>();
 
             foreach (var val in repeat.Matches) {
                 if (val is not Matchlet.List l)
                     break;
                 
-                var op = l.Matches[0].As<Matchlet.Or>().Matches.Last().As<Matchlet.Token>();
-                var v = visit(l.Matches[1]).Unwrap();
-                expr = new BinOpNode(expr.As<ExpressionNode>(), op, v.As<ExpressionNode>());
+                var op = l[0].As<Matchlet.Or>().Matches.Last().As<Matchlet.Token>();
+                var v = visit(l[1]).Unwrap();
+                expr = new BinOpExpression(expr.As<ExpressionNode>(), op, v.As<ExpressionNode>());
             }
         }
 
@@ -48,9 +48,9 @@ public class ValueFuncVisitor : Visitor {
     public Result<AstNode, Diagnostic> Visit(Matchlet match) {
         var list = match.As<Matchlet.List>();
 
-        var value = ValueVisitor.Instance.Visit(list.Matches[0]);
+        var value = ValueVisitor.Instance.Visit(list[0]);
 
-        var optAccesses = list.Matches[1];
+        var optAccesses = list[1];
 
         if (optAccesses is Matchlet.Empty || value.IsErr)
             return value;
@@ -64,28 +64,28 @@ public class ValueFuncVisitor : Visitor {
 
             if (access.Matches.Count == 2 && access.Matches[1] is not Matchlet.Error) {
                 var token = access.Matches[1].As<Matchlet.List>().Matches[1].As<Matchlet.Token>();
-                if (output is ObjectAccessNode obj)
+                if (output is ObjectAccessExpression obj)
                     obj.Parameters.Add(token);
                 else
-                    output = new ObjectAccessNode(output, [token]);
+                    output = new ObjectAccessExpression(output, [token]);
             } else {
-                var optInvoke = access.Matches[0].As<Matchlet.List>().Matches[1];
+                var optInvoke = access.Matches[0].As<Matchlet.List>()[1];
 
                 if (optInvoke is Matchlet.Empty) {
-                    output = new InvokeNode(output, []);
+                    output = new InvokeExpression(output, []);
                     continue;
                 }
 
                 var invoke = optInvoke.As<Matchlet.List>();
 
                 var args = new List<ExpressionNode>();
-                var optArgsList = invoke.Matches[0];
+                var optArgsList = invoke[0];
 
                 if (optArgsList is not Matchlet.Empty) {
                     var argsList = optArgsList.As<Matchlet.Repeat>();
 
                     for (int j = 0; j < argsList.Matches.Count - 1; j++) {
-                        var arg = OperatorVisitor.Instance.Visit(argsList.Matches[j].As<Matchlet.List>().Matches[0]);
+                        var arg = OperatorVisitor.Instance.Visit(argsList.Matches[j].As<Matchlet.List>()[0]);
 
                         if (arg.IsErr)
                             return arg;
@@ -94,14 +94,14 @@ public class ValueFuncVisitor : Visitor {
                     }
                 }
                 
-                var final = OperatorVisitor.Instance.Visit(invoke.Matches[1]);
+                var final = OperatorVisitor.Instance.Visit(invoke[1]);
 
                 if (final.IsErr)
                     return final;
                 
                 args.Add(final.Unwrap().As<ExpressionNode>());
 
-                output = new InvokeNode(output, args);
+                output = new InvokeExpression(output, args);
             }
         }
 
@@ -121,7 +121,7 @@ public class ValueVisitor : Visitor {
             return err.Diagnostic;
         
         if (matched is Matchlet.Token token)
-            return new ValueNode(token);
+            return new ValueExpression(token);
         
         return ParenthesisVisitor.Instance.Visit(matched);
     }
@@ -133,6 +133,6 @@ public class ParenthesisVisitor : Visitor {
     public Result<AstNode, Diagnostic> Visit(Matchlet match) {
         var list = match.As<Matchlet.List>();
 
-        return OperatorVisitor.Instance.Visit(list.Matches[1]);
+        return OperatorVisitor.Instance.Visit(list[1]);
     }
 }

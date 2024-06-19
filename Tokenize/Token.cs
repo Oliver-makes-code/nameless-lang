@@ -1,16 +1,17 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using Lang.SyntaxTree.Rules;
 using Lang.Util;
 
 namespace Lang.Tokenize;
 
-public record Token(TokenType Type, StringView Src) {
-    public override string? ToString()
-        => Type.ToString();
+public record Token(TokenType Type, StringView Src) : IntoValueString {
+    public ValueString IntoValueString()
+        => Type.IntoValueString();
 }
 
-public record TokenType {
+public record TokenType : IntoValueString {
     public readonly string Name;
 
     public readonly Matcher Matcher;
@@ -79,8 +80,10 @@ public record TokenType {
         public static bool IsValue(string value, [NotNullWhen(true)] out Keyword? keyword)
             => Values.TryGetValue(value, out keyword);
 
-        public override string ToString()
-            => $"Keyword(\"{Value}\")";
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("Token", "Keyword")
+                .IdentField(Value)
+                .Build();
     }
 
     public record Symbol : TokenType {
@@ -162,33 +165,41 @@ public record TokenType {
             return false;
         }
 
-        public override string ToString()
-            => $"Symbol({Name}: \"{Value}\")";
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("Token", "Symbol", Name)
+                .IdentField(Value)
+                .Build();
     }
 
-    public record Number<T>(T Value) : TokenType("Number") where T : struct {
+    public record Number<T>(T Value) : TokenType("Number") where T : struct, INumber<T>, INumberBase<T>, IBinaryNumber<T> {
         public static readonly Matcher TypeMatcher = new TokenTypeMatcher<Number<T>>("Number");
 
-        public override string ToString()
-            => $"Number({Value})";
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("Token", "Number")
+                .NumberField(Value)
+                .Build();
     }
 
     public record String(string Value) : TokenType("String") {
         public static readonly Matcher TypeMatcher = new TokenTypeMatcher<String>("String");
 
-        public override string ToString()
-            => $"String(\"{Value}\")";
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("Token", "String")
+                .StringField(Value)
+                .Build();
     }
 
     public record Identifier(string Value) : TokenType("Identifier") {
         public static readonly Matcher TypeMatcher = new TokenTypeMatcher<Identifier>("Identifier");
 
-        public override string ToString()
-            => $"Identifier(\"{Value}\")";
+        public override ValueString IntoValueString()
+            => new ValueStringBuilder.Tuple("Token", "Identifier")
+                .IdentField(Value)
+                .Build();
     }
 
     public static readonly TokenType Eof = new("Eof");
 
-    public override string? ToString()
-        => Name ?? base.ToString();
+    public virtual ValueString IntoValueString()
+        => new ValueStringBuilder.Struct("Token", Name).Build();
 }
